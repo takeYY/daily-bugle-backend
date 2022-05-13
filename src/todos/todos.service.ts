@@ -24,8 +24,16 @@ export class TodosService {
     return newTodoData;
   }
 
-  findAll() {
-    return `This action returns all todos !!!!`;
+  async findAll() {
+    const snapshot = await collectionRef.get();
+    const todoList = snapshot.docs.map((doc) => {
+      return {
+        id: doc.id,
+        ...doc.data(),
+      };
+    });
+
+    return todoList;
   }
 
   findOne(id: number) {
