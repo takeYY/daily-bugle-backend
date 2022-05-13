@@ -8,9 +8,10 @@ import { UsersModule } from './users/users.module';
 import { OrdinariesModule } from './ordinaries/ordinaries.module';
 import { UsersOrdinariesModule } from './users-ordinaries/users-ordinaries.module';
 import { WeekdaysModule } from './weekdays/weekdays.module';
+import { AchievementsModule } from './achievements/achievements.module';
 
 @Module({
-  imports: [TodosModule, MoodsModule, UsersMoodsModule, UsersModule, OrdinariesModule, UsersOrdinariesModule, WeekdaysModule],
+  imports: [TodosModule, MoodsModule, UsersMoodsModule, UsersModule, OrdinariesModule, UsersOrdinariesModule, WeekdaysModule, AchievementsModule],
   controllers: [AppController],
   providers: [AppService],
 })
