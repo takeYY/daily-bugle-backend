@@ -7,9 +7,10 @@ import { UsersMoodsModule } from './users-moods/users-moods.module';
 import { UsersModule } from './users/users.module';
 import { OrdinariesModule } from './ordinaries/ordinaries.module';
 import { UsersOrdinariesModule } from './users-ordinaries/users-ordinaries.module';
+import { WeekdaysModule } from './weekdays/weekdays.module';
 
 @Module({
-  imports: [TodosModule, MoodsModule, UsersMoodsModule, UsersModule, OrdinariesModule, UsersOrdinariesModule],
+  imports: [TodosModule, MoodsModule, UsersMoodsModule, UsersModule, OrdinariesModule, UsersOrdinariesModule, WeekdaysModule],
   controllers: [AppController],
   providers: [AppService],
 })
