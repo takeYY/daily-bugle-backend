@@ -25,7 +25,7 @@
     "fb-start": "npm run shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
-    "emulators": "tsc-watch --onFirstSuccess 'firebase emulators:start --only firestore,functions'"
+    "emulators": "npm run build && tsc-watch --onFirstSuccess 'firebase emulators:start --only firestore,functions'"
   },
   "dependencies": {
     "@nestjs/common": "^8.0.0",
