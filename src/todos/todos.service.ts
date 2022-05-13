@@ -1,15 +1,31 @@
 import { Injectable } from '@nestjs/common';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
+import * as admin from 'firebase-admin';
+
+admin.initializeApp();
+const firestore = admin.firestore();
+const collectionRef = firestore.collection('todos');
 
 @Injectable()
 export class TodosService {
-  create(createTodoDto: CreateTodoDto) {
-    return 'This action adds a new todo';
+  async create(createTodoDto: CreateTodoDto) {
+    const docRef = await collectionRef.add({
+      title: createTodoDto.title,
+      body: createTodoDto.body,
+    });
+    const snapshot = await docRef.get();
+    const data = snapshot.data();
+    const newTodoData = {
+      id: docRef.id,
+      ...data,
+    };
+
+    return newTodoData;
   }
 
   findAll() {
-    return `This action returns all todos`;
+    return `This action returns all todos !!!!`;
   }
 
   findOne(id: number) {
