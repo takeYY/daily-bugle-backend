@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
-import * as admin from 'firebase-admin';
 
-admin.initializeApp();
-const firestore = admin.firestore();
+import { firestore } from '../app.service';
+
 const collectionRef = firestore.collection('todos');
 
 @Injectable()
