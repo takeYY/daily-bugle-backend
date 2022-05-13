@@ -5,9 +5,10 @@ import { TodosModule } from './todos/todos.module';
 import { MoodsModule } from './moods/moods.module';
 import { UsersMoodsModule } from './users-moods/users-moods.module';
 import { UsersModule } from './users/users.module';
+import { OrdinariesModule } from './ordinaries/ordinaries.module';
 
 @Module({
-  imports: [TodosModule, MoodsModule, UsersMoodsModule, UsersModule],
+  imports: [TodosModule, MoodsModule, UsersMoodsModule, UsersModule, OrdinariesModule],
   controllers: [AppController],
   providers: [AppService],
 })
