@@ -4,9 +4,10 @@ import { AppService } from './app.service';
 import { TodosModule } from './todos/todos.module';
 import { MoodsModule } from './moods/moods.module';
 import { UsersMoodsModule } from './users-moods/users-moods.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
-  imports: [TodosModule, MoodsModule, UsersMoodsModule],
+  imports: [TodosModule, MoodsModule, UsersMoodsModule, UsersModule],
   controllers: [AppController],
   providers: [AppService],
 })
