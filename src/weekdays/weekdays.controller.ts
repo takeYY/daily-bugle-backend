@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { WeekdaysService } from './weekdays.service';
 import { CreateWeekdayDto } from './dto/create-weekday.dto';
 import { UpdateWeekdayDto } from './dto/update-weekday.dto';

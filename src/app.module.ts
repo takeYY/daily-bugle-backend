@@ -11,7 +11,16 @@ import { WeekdaysModule } from './weekdays/weekdays.module';
 import { AchievementsModule } from './achievements/achievements.module';
 
 @Module({
-  imports: [TodosModule, MoodsModule, UsersMoodsModule, UsersModule, OrdinariesModule, UsersOrdinariesModule, WeekdaysModule, AchievementsModule],
+  imports: [
+    TodosModule,
+    MoodsModule,
+    UsersMoodsModule,
+    UsersModule,
+    OrdinariesModule,
+    UsersOrdinariesModule,
+    WeekdaysModule,
+    AchievementsModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

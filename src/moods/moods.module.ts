@@ -4,6 +4,6 @@ import { MoodsController } from './moods.controller';
 
 @Module({
   controllers: [MoodsController],
-  providers: [MoodsService]
+  providers: [MoodsService],
 })
 export class MoodsModule {}

@@ -4,6 +4,6 @@ import { AchievementsController } from './achievements.controller';
 
 @Module({
   controllers: [AchievementsController],
-  providers: [AchievementsService]
+  providers: [AchievementsService],
 })
 export class AchievementsModule {}

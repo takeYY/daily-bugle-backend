@@ -4,6 +4,6 @@ import { OrdinariesController } from './ordinaries.controller';
 
 @Module({
   controllers: [OrdinariesController],
-  providers: [OrdinariesService]
+  providers: [OrdinariesService],
 })
 export class OrdinariesModule {}

@@ -4,6 +4,6 @@ import { UsersOrdinariesController } from './users-ordinaries.controller';
 
 @Module({
   controllers: [UsersOrdinariesController],
-  providers: [UsersOrdinariesService]
+  providers: [UsersOrdinariesService],
 })
 export class UsersOrdinariesModule {}
