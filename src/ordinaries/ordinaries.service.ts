@@ -2,14 +2,26 @@ import { Injectable } from '@nestjs/common';
 import { CreateOrdinaryDto } from './dto/create-ordinary.dto';
 import { UpdateOrdinaryDto } from './dto/update-ordinary.dto';
 
+import { firestore } from '../app.service';
+
+const collectionRef = firestore.collection('ordinaries');
+
 @Injectable()
 export class OrdinariesService {
   create(createOrdinaryDto: CreateOrdinaryDto) {
     return 'This action adds a new ordinary';
   }
 
-  findAll() {
-    return `This action returns all ordinaries`;
+  async findAll() {
+    const snapshot = await collectionRef.get();
+    const ordinaryList = snapshot.docs.map((doc) => {
+      return {
+        id: doc.id,
+        ...doc.data(),
+      };
+    });
+
+    return ordinaryList;
   }
 
   findOne(id: number) {
