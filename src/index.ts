@@ -9,7 +9,10 @@ const server = express();
 const promiseApplicationReady = NestFactory.create(
   AppModule,
   new ExpressAdapter(server),
-).then((app) => app.init());
+).then((app) => {
+  app.init();
+  app.enableCors();
+});
 
 export const api = functions
   .region('asia-northeast1')
