@@ -25,8 +25,16 @@ export class AchievementsService {
     return newAchievementData;
   }
 
-  findAll() {
-    return `This action returns all achievements`;
+  async findAll() {
+    const snapshot = await collectionRef.get();
+    const achievementList = snapshot.docs.map((doc) => {
+      return {
+        id: doc.id,
+        ...doc.data(),
+      };
+    });
+
+    return achievementList;
   }
 
   findOne(id: number) {
