@@ -2,10 +2,27 @@ import { Injectable } from '@nestjs/common';
 import { CreateAchievementDto } from './dto/create-achievement.dto';
 import { UpdateAchievementDto } from './dto/update-achievement.dto';
 
+import { firestore } from '../app.service';
+
+const collectionRef = firestore.collection('achievements');
+
 @Injectable()
 export class AchievementsService {
-  create(createAchievementDto: CreateAchievementDto) {
-    return 'This action adds a new achievement';
+  async create(createAchievementDto: CreateAchievementDto) {
+    const docRef = await collectionRef.add({
+      usersOrdinariesId: createAchievementDto.usersOrdinariesId,
+      isAchieved: createAchievementDto.isAchieved,
+      comment: createAchievementDto.comment,
+      createdAt: createAchievementDto.createdAt,
+    });
+    const snapshot = await docRef.get();
+    const data = snapshot.data();
+    const newAchievementData = {
+      id: docRef.id,
+      ...data,
+    };
+
+    return newAchievementData;
   }
 
   findAll() {
