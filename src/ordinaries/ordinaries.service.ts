@@ -8,8 +8,18 @@ const collectionRef = firestore.collection('ordinaries');
 
 @Injectable()
 export class OrdinariesService {
-  create(createOrdinaryDto: CreateOrdinaryDto) {
-    return 'This action adds a new ordinary';
+  async create(createOrdinaryDto: CreateOrdinaryDto) {
+    const docRef = await collectionRef.add({
+      name: createOrdinaryDto.name,
+    });
+    const snapshot = await docRef.get();
+    const data = snapshot.data();
+    const newOrdinaryData = {
+      id: docRef.id,
+      ...data,
+    };
+
+    return newOrdinaryData;
   }
 
   async findAll() {
