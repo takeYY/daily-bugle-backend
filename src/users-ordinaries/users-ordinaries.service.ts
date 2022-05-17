@@ -27,8 +27,16 @@ export class UsersOrdinariesService {
     return newUsersOrdinaryData;
   }
 
-  findAll() {
-    return `This action returns all usersOrdinaries`;
+  async findAll() {
+    const snapshot = await collectionRef.get();
+    const usersOrdinaryList = snapshot.docs.map((doc) => {
+      return {
+        id: doc.id,
+        ...doc.data(),
+      };
+    });
+
+    return usersOrdinaryList;
   }
 
   findOne(id: number) {
