@@ -2,14 +2,26 @@ import { Injectable } from '@nestjs/common';
 import { CreateWeekdayDto } from './dto/create-weekday.dto';
 import { UpdateWeekdayDto } from './dto/update-weekday.dto';
 
+import { firestore } from '../app.service';
+
+const collectionRef = firestore.collection('weekdays');
+
 @Injectable()
 export class WeekdaysService {
   create(createWeekdayDto: CreateWeekdayDto) {
     return 'This action adds a new weekday';
   }
 
-  findAll() {
-    return `This action returns all weekdays`;
+  async findAll() {
+    const snapshot = await collectionRef.get();
+    const weekdayList = snapshot.docs.map((doc) => {
+      return {
+        id: doc.id,
+        ...doc.data(),
+      };
+    });
+
+    return weekdayList;
   }
 
   findOne(id: number) {
