@@ -23,8 +23,16 @@ export class UsersService {
     return newUserData;
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async findAll() {
+    const snapshot = await collectionRef.get();
+    const userList = snapshot.docs.map((doc) => {
+      return {
+        id: doc.id,
+        ...doc.data(),
+      };
+    });
+
+    return userList;
   }
 
   findOne(id: number) {
