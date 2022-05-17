@@ -2,10 +2,25 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
+import { firestore } from '../app.service';
+
+const collectionRef = firestore.collection('users');
+
 @Injectable()
 export class UsersService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  async create(createUserDto: CreateUserDto) {
+    const docRef = await collectionRef.add({
+      displayName: createUserDto.displayName,
+      photoDataUrl: createUserDto.photoDataUrl,
+    });
+    const snapshot = await docRef.get();
+    const data = snapshot.data();
+    const newUserData = {
+      id: docRef.id,
+      ...data,
+    };
+
+    return newUserData;
   }
 
   findAll() {
