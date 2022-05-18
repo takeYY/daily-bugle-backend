@@ -75,14 +75,48 @@ export class UsersOrdinariesService {
 
   async findAllByUid(uid: string) {
     const querySnapshot = await collectionRef.where('userId', '==', uid).get();
-    const usersOrdinariesByUidList = querySnapshot.docs.map((doc) => {
+    //let docRef = [];
+    const docRef = [];
+    const usersOrdinaries = querySnapshot.docs.map((doc) => {
+      docRef.push(doc.ref);
       return {
         id: doc.id,
         ...doc.data(),
       };
     });
+    const ordinaries = [];
+    const weekdays = [];
+    docRef.forEach(async (dRef) => {
+      const ordinary = (await dRef.collection('ordinary').get()).docs.map(
+        (o) => {
+          return {
+            id: o.id,
+            ...o.data(),
+          };
+        },
+      )[0];
+      ordinaries.push(ordinary);
+      const weekday = (await docRef[0].collection('weekdays').get()).docs.map(
+        (w) => {
+          return {
+            id: w.id,
+            ...w.data(),
+          };
+        },
+      );
+      weekdays.push(weekday);
+    });
 
-    return usersOrdinariesByUidList;
+    const result = [];
+    for (let i = 0; i < docRef.length; i++) {
+      result.push({
+        ...usersOrdinaries[i],
+        ordinary: ordinaries[i],
+        weekdays: weekdays[i],
+      });
+    }
+
+    return result;
   }
 
   findOne(id: number) {
