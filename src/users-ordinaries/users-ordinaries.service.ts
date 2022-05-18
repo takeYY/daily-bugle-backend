@@ -11,20 +11,54 @@ export class UsersOrdinariesService {
   async create(createUsersOrdinaryDto: CreateUsersOrdinaryDto) {
     const docRef = await collectionRef.add({
       userId: createUsersOrdinaryDto.userId,
-      ordinaryId: createUsersOrdinaryDto.ordinaryId,
-      weekdayId: createUsersOrdinaryDto.weekdayId,
-      startedOn: createUsersOrdinaryDto.startedOn,
       createdAt: new Date(),
       updatedAt: new Date(),
+      startedOn: createUsersOrdinaryDto.startedOn,
+      isClosed: createUsersOrdinaryDto.isClosed,
+    });
+    collectionRef
+      .doc(docRef.id)
+      .collection('ordinary')
+      .add({
+        ...createUsersOrdinaryDto.ordinary,
+      });
+    createUsersOrdinaryDto.weekdays.forEach((weekday) => {
+      collectionRef
+        .doc(docRef.id)
+        .collection('weekdays')
+        .add({
+          ...weekday,
+        });
     });
     const snapshot = await docRef.get();
     const data = snapshot.data();
+    const ordinary = (
+      await collectionRef.doc(docRef.id).collection('ordinary').get()
+    ).docs.map((o) => {
+      return {
+        id: o.id,
+        ...o.data(),
+      };
+    })[0];
+    const weekdays = (
+      await collectionRef.doc(docRef.id).collection('weekdays').get()
+    ).docs.map((w) => {
+      return {
+        id: w.id,
+        ...w.data(),
+      };
+    });
     const newUsersOrdinaryData = {
       id: docRef.id,
       ...data,
     };
+    const result = {
+      ...newUsersOrdinaryData,
+      ordinary: ordinary,
+      weekdays: weekdays,
+    };
 
-    return newUsersOrdinaryData;
+    return result;
   }
 
   async findAll() {
@@ -56,6 +90,7 @@ export class UsersOrdinariesService {
   }
 
   update(id: number, updateUsersOrdinaryDto: UpdateUsersOrdinaryDto) {
+    console.log(updateUsersOrdinaryDto);
     return `This action updates a #${id} usersOrdinary`;
   }
 
