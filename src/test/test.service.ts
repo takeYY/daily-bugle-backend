@@ -4,29 +4,53 @@ import { UpdateTestDto } from './dto/update-test.dto';
 
 import { firestore } from '../app.service';
 
-const collectionRef = firestore.collection('test');
+const collectionRef = firestore.collection('test-users');
+const userRef = firestore.collection('test-users');
+const ordinaryRef = firestore.collection('test-ordinaries');
+const weekdayRef = firestore.collection('test-weekdays');
 
 @Injectable()
 export class TestService {
   async create(createTestDto: CreateTestDto) {
-    await [2, 3, 4, 5, 6].forEach((n) => {
-      collectionRef.add({
-        name: `test${n}`,
+    // userの追加
+    await [2, 3, 4, 5, 6, 7].forEach((n) => {
+      userRef.add({
+        name: `user-${n}`,
       });
     });
+
+    // weekdayの追加
     await [
       { name: '月', order: 1, isChecked: false },
       { name: '火', order: 2, isChecked: false },
+      { name: '水', order: 3, isChecked: false },
+      { name: '木', order: 4, isChecked: false },
+      { name: '金', order: 5, isChecked: false },
+      { name: '土', order: 6, isChecked: false },
       { name: '日', order: 7, isChecked: false },
     ].forEach((dict) => {
-      firestore.collection('weekdays').add({
+      weekdayRef.add({
         name: dict.name,
         order: dict.order,
         isChecked: dict.isChecked,
       });
     });
+
+    // ordinaryの追加
+    await [
+      '朝食を摂る',
+      '歯を磨く',
+      '掃除をする',
+      '洗濯をする',
+      '買い物に出かける',
+    ].forEach((l) => {
+      ordinaryRef.add({
+        name: l,
+      });
+    });
+
     const docRef = await collectionRef.add({
-      name: 'test1',
+      name: 'user-1',
     });
     const snapshot = await docRef.get();
     const data = snapshot.data();

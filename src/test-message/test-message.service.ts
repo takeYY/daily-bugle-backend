@@ -4,12 +4,15 @@ import { UpdateTestMessageDto } from './dto/update-test-message.dto';
 
 import { firestore } from '../app.service';
 
-const collectionRef = firestore.collection('test-message');
+const userRef = firestore.collection('test-users');
+const ordinaryRef = firestore.collection('test-ordinaries');
+const weekdayRef = firestore.collection('test-weekdays');
+const usersOrdinaryRef = firestore.collection('test-users-ordinaries');
 
 @Injectable()
 export class TestMessageService {
   async create(createTestDto: CreateTestMessageDto) {
-    const docRef = await collectionRef.add({
+    const docRef = await usersOrdinaryRef.add({
       name: createTestDto.name,
       testUser: createTestDto.testUser,
       weekdays: createTestDto.weekdays,
@@ -25,75 +28,127 @@ export class TestMessageService {
   }
 
   async findAll() {
-    const snapshot = await collectionRef.get();
-
-    const ordinaryList = snapshot.docs.map(async (doc) => {
-      const weekdaysCollections = collectionRef
-        .doc(doc.id)
-        .collection('weekdays')
-        .get();
-      const weekdaysList = (await weekdaysCollections).docs.map((w) => {
-        return {
-          id: w.id,
-          ...w.data(),
-        };
-      });
-      console.log('@@@@@@@@@@@');
-      console.log(weekdaysList);
-      console.log(doc.id);
-      console.log({ ...doc.data() });
-      /* return {
-        id: doc.id,
-        weekdays: weekdaysList,
-        ...doc.data(),
-      }; */
-      const result = weekdaysList.map((w) => {
-        return {
-          id: doc.id,
-          ...doc.data(),
-          ...w,
-        };
-      });
-      console.log(result);
-      return result;
-    });
-
-    return ordinaryList;
-  }
-
-  async testM(test: string) {
-    /* const userList = [];
-    firestore.collection('test').onSnapshot((ss) => {
-      ss.forEach((result) => {
-        userList.push(result);
-      });
-    }); */
-    const userList: any = (await firestore.collection('test').get()).docs.map(
-      (doc) => {
-        return {
-          id: doc.id,
-          ...doc.data(),
-        };
-      },
-    );
-    const docRef = await collectionRef.add({
-      name: test,
-      userId: userList[2].id,
-    });
-
-    const weekdays: any = (
-      await firestore.collection('weekdays').get()
-    ).docs.map((doc) => {
+    //const snapshot = await usersOrdinaryRef.get();
+    let documentId: string;
+    // users-ordinariesのcollection以外を取得
+    const usersOrdinaryList = (await usersOrdinaryRef.get()).docs.map((doc) => {
+      documentId = doc.id;
       return {
         id: doc.id,
         ...doc.data(),
       };
     });
-    weekdays.forEach((weekday) => {
-      collectionRef.doc(docRef.id).collection('weekdays').add({
-        id: weekday.id,
-        name: weekday.name,
-        order: weekday.order,
+
+    // weekdaysコレクションを取得
+    const weekdaysCollections = await usersOrdinaryRef
+      .doc(documentId)
+      .collection('weekdays')
+      .get();
+    const weekdaysList = weekdaysCollections.docs.map((w) => {
+      return {
+        id: w.id,
+        ...w.data(),
+      };
+    });
+
+    // ordinaryコレクションを取得
+    const ordinaryCollections = await usersOrdinaryRef
+      .doc(documentId)
+      .collection('ordinary')
+      .get();
+    const ordinary = ordinaryCollections.docs.map((o) => {
+      return {
+        id: o.id,
+        ...o.data(),
+      };
+    })[0];
+
+    // コレクションも含めてresultに渡す
+    const result = usersOrdinaryList.map((usersOrdinary) => {
+      return {
+        ...usersOrdinary,
+        ordinary: ordinary,
+        weekdays: weekdaysList.map((weekday) => {
+          return { ...weekday };
+        }),
+      };
+    });
+    return result;
+  }
+
+  async testM(testUser: string) {
+    // userList取得
+    const userList: any = (await userRef.get()).docs.map((doc) => {
+      return {
+        id: doc.id,
+        ...doc.data(),
+      };
+    });
+
+    // user id取得
+    const userId: string = (await userRef.where('name', '==', testUser).get())
+      .docs[0].id;
+
+    console.log('userId:', userId);
+
+    // ordinary取得
+    const ordinaryList = (await ordinaryRef.get()).docs.map((doc) => {
+      return {
+        id: doc.id,
+        ...doc.data(),
+      };
+    });
+
+    // weekdays 取得
+    const weekdayList = (await weekdayRef.get()).docs.map((doc) => {
+      return {
+        id: doc.id,
+        ...doc.data(),
+      };
+    });
+
+    const tmp1 = await usersOrdinaryRef.add({
+      userId: userList[0].id,
+      createdAt: new Date(),
+      isClosed: false,
+    });
+    const tmp2 = await usersOrdinaryRef.add({
+      userId: userList[1].id,
+      createdAt: new Date(),
+      isClosed: false,
+    });
+    const tmp3 = await usersOrdinaryRef.add({
+      userId: userList[2].id,
+      createdAt: new Date(),
+      isClosed: false,
+    });
+    const tmp4 = await usersOrdinaryRef.add({
+      userId: userList[2].id,
+      createdAt: new Date(),
+      isClosed: false,
+    });
+    const usersOrdinariesList = [tmp1, tmp2, tmp3, tmp4];
+    console.log('@@@@ users ordinary @@@@');
+    console.log(usersOrdinariesList);
+
+    usersOrdinariesList.forEach((usersOrdinary) => {
+      const rand = Math.floor(Math.random() * ordinaryList.length);
+      const ordinary = ordinaryList[rand];
+      usersOrdinaryRef
+        .doc(usersOrdinary.id)
+        .collection('ordinary')
+        .add({
+          ...ordinary,
+        });
+      [1, 2, 3].forEach((i) => {
+        const r = Math.floor(Math.random() * weekdayList.length);
+        const weekday = weekdayList[r];
+        usersOrdinaryRef
+          .doc(usersOrdinary.id)
+          .collection('weekdays')
+          .add({
+            ...weekday,
+          });
       });
     });
   }
