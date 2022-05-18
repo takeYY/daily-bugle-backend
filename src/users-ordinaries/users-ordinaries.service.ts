@@ -14,8 +14,8 @@ export class UsersOrdinariesService {
       ordinaryId: createUsersOrdinaryDto.ordinaryId,
       weekdayId: createUsersOrdinaryDto.weekdayId,
       startedOn: createUsersOrdinaryDto.startedOn,
-      createdAt: createUsersOrdinaryDto.createdAt,
-      updatedAt: createUsersOrdinaryDto.updatedAt,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     });
     const snapshot = await docRef.get();
     const data = snapshot.data();
