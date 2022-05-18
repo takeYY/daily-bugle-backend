@@ -9,6 +9,8 @@ import { OrdinariesModule } from './ordinaries/ordinaries.module';
 import { UsersOrdinariesModule } from './users-ordinaries/users-ordinaries.module';
 import { WeekdaysModule } from './weekdays/weekdays.module';
 import { AchievementsModule } from './achievements/achievements.module';
+import { TestModule } from './test/test.module';
+import { TestMessageModule } from './test-message/test-message.module';
 
 @Module({
   imports: [
@@ -20,6 +22,8 @@ import { AchievementsModule } from './achievements/achievements.module';
     UsersOrdinariesModule,
     WeekdaysModule,
     AchievementsModule,
+    TestModule,
+    TestMessageModule,
   ],
   controllers: [AppController],
   providers: [AppService],
