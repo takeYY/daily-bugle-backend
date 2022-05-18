@@ -13,7 +13,7 @@ export class WeekdaysService {
   }
 
   async findAll() {
-    const snapshot = await collectionRef.get();
+    const snapshot = await collectionRef.orderBy('order').get();
     const weekdayList = snapshot.docs.map((doc) => {
       return {
         id: doc.id,
