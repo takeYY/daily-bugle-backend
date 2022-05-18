@@ -39,6 +39,18 @@ export class UsersOrdinariesService {
     return usersOrdinaryList;
   }
 
+  async findAllByUid(uid: string) {
+    const querySnapshot = await collectionRef.where('userId', '==', uid).get();
+    const usersOrdinariesByUidList = querySnapshot.docs.map((doc) => {
+      return {
+        id: doc.id,
+        ...doc.data(),
+      };
+    });
+
+    return usersOrdinariesByUidList;
+  }
+
   findOne(id: number) {
     return `This action returns a #${id} usersOrdinary`;
   }
