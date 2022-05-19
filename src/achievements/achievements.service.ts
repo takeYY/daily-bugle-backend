@@ -10,19 +10,33 @@ const collectionRef = firestore.collection('achievements');
 export class AchievementsService {
   async create(createAchievementDto: CreateAchievementDto) {
     const docRef = await collectionRef.add({
-      usersOrdinariesId: createAchievementDto.usersOrdinariesId,
       isAchieved: createAchievementDto.isAchieved,
       comment: createAchievementDto.comment,
-      createdAt: createAchievementDto.createdAt,
+      createdAt: new Date(),
     });
+    const usersOrdinariesRef = await collectionRef
+      .doc(docRef.id)
+      .collection('usersOrdinaries')
+      .add({
+        ...createAchievementDto.usersOrdinaries,
+      });
     const snapshot = await docRef.get();
     const data = snapshot.data();
     const newAchievementData = {
       id: docRef.id,
       ...data,
     };
+    const collectionSnapshot = await usersOrdinariesRef.get();
+    const newUsersOrdinaryData = {
+      id: usersOrdinariesRef.id,
+      ...collectionSnapshot.data(),
+    };
+    const result = {
+      ...newAchievementData,
+      usersOrdinaries: newUsersOrdinaryData,
+    };
 
-    return newAchievementData;
+    return result;
   }
 
   async findAll() {
