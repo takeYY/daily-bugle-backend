@@ -22,8 +22,8 @@ export class UsersOrdinariesController {
     return this.usersOrdinariesService.create(createUsersOrdinaryDto);
   }
 
-  @Get('list')
-  findAllByUid(@Body('uid') uid: string) {
+  @Get('uid/:uid')
+  findAllByUid(@Param('uid') uid: string) {
     return this.usersOrdinariesService.findAllByUid(uid);
   }
 
