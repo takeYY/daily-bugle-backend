@@ -6,7 +6,6 @@ import {
   Patch,
   Param,
   Delete,
-  Query,
 } from '@nestjs/common';
 import { UsersOrdinariesService } from './users-ordinaries.service';
 import { CreateUsersOrdinaryDto } from './dto/create-users-ordinary.dto';
@@ -23,8 +22,8 @@ export class UsersOrdinariesController {
     return this.usersOrdinariesService.create(createUsersOrdinaryDto);
   }
 
-  @Get('query')
-  findAllByUid(@Query('uid') uid: string) {
+  @Get('list')
+  findAllByUid(@Body('uid') uid: string) {
     return this.usersOrdinariesService.findAllByUid(uid);
   }
 
