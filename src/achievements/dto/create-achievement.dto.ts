@@ -1,5 +1,8 @@
+import { CreateUsersOrdinaryDto } from 'src/users-ordinaries/dto/create-users-ordinary.dto';
+
 export class CreateAchievementDto {
-  usersOrdinariesId: string;
+  id?: string;
+  usersOrdinaries: CreateUsersOrdinaryDto;
   isAchieved: boolean;
   comment: string;
   createdAt: Date;
