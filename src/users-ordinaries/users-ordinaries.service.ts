@@ -75,48 +75,38 @@ export class UsersOrdinariesService {
 
   async findAllByUid(uid: string) {
     const querySnapshot = await collectionRef.where('userId', '==', uid).get();
-    //let docRef = [];
-    const docRef = [];
+    const docIds = [];
     const usersOrdinaries = querySnapshot.docs.map((doc) => {
-      docRef.push(doc.ref);
+      docIds.push(doc.id);
       return {
         id: doc.id,
         ...doc.data(),
       };
     });
-    const ordinaries = [];
-    const weekdays = [];
-    docRef.forEach(async (dRef) => {
-      const ordinary = (await dRef.collection('ordinary').get()).docs.map(
-        (o) => {
-          return {
-            id: o.id,
-            ...o.data(),
-          };
-        },
-      )[0];
-      ordinaries.push(ordinary);
-      const weekday = (await docRef[0].collection('weekdays').get()).docs.map(
-        (w) => {
-          return {
-            id: w.id,
-            ...w.data(),
-          };
-        },
-      );
-      weekdays.push(weekday);
-    });
-
-    const result = [];
-    for (let i = 0; i < docRef.length; i++) {
-      result.push({
-        ...usersOrdinaries[i],
-        ordinary: ordinaries[i],
-        weekdays: weekdays[i],
+    const promise = docIds.map(async (docId, index) => {
+      const ordinary = (
+        await collectionRef.doc(docId).collection('ordinary').get()
+      ).docs.map((o) => {
+        return {
+          id: o.id,
+          ...o.data(),
+        };
       });
-    }
-
-    return result;
+      const weekday = (
+        await collectionRef.doc(docId).collection('weekdays').get()
+      ).docs.map((w) => {
+        return {
+          id: w.id,
+          ...w.data(),
+        };
+      });
+      return {
+        ...usersOrdinaries[index],
+        ordinary: await Promise.all(ordinary),
+        weekdays: await Promise.all(weekday),
+      };
+    });
+    return await Promise.all(promise);
   }
 
   findOne(id: number) {
