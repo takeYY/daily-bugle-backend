@@ -4,6 +4,6 @@ import { TestMessageController } from './test-message.controller';
 
 @Module({
   controllers: [TestMessageController],
-  providers: [TestMessageService]
+  providers: [TestMessageService],
 })
 export class TestMessageModule {}
