@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { AchievementsService } from './achievements.service';
 import { CreateAchievementDto } from './dto/create-achievement.dto';
@@ -18,6 +19,13 @@ export class AchievementsController {
   @Post()
   create(@Body() createAchievementDto: CreateAchievementDto) {
     return this.achievementsService.create(createAchievementDto);
+  }
+
+  @Get('query')
+  findAllByQuery(@Query() query: { uid: string }) {
+    if (query.uid) return this.achievementsService.findAllByUid(query.uid);
+
+    return `The following queries are not supported: ${query}`;
   }
 
   @Get()
