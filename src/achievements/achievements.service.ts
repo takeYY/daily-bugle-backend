@@ -10,6 +10,7 @@ const collectionRef = firestore.collection('achievements');
 export class AchievementsService {
   async create(createAchievementDto: CreateAchievementDto) {
     const docRef = await collectionRef.add({
+      userId: createAchievementDto.userId,
       isAchieved: createAchievementDto.isAchieved,
       comment: createAchievementDto.comment,
       createdAt: new Date(),
