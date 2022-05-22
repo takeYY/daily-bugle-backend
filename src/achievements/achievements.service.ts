@@ -97,8 +97,14 @@ export class AchievementsService {
     return `This action returns a #${id} achievement`;
   }
 
-  update(id: number, updateAchievementDto: UpdateAchievementDto) {
-    return `This action updates a #${id} achievement`;
+  async update(id: string, updateAchievementDto: UpdateAchievementDto) {
+    const achievementRef = collectionRef.doc(id);
+    const result = await achievementRef.update({
+      isAchieved: updateAchievementDto.isAchieved,
+      comment: updateAchievementDto.comment,
+    });
+
+    return result;
   }
 
   remove(id: number) {

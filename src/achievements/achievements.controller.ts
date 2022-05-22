@@ -56,7 +56,7 @@ export class AchievementsController {
     @Param('id') id: string,
     @Body() updateAchievementDto: UpdateAchievementDto,
   ) {
-    return this.achievementsService.update(+id, updateAchievementDto);
+    return this.achievementsService.update(id, updateAchievementDto);
   }
 
   @Delete(':id')
