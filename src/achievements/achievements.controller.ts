@@ -8,6 +8,7 @@ import {
   Delete,
   Query,
 } from '@nestjs/common';
+import { logger } from 'firebase-functions/v1';
 import { AchievementsService } from './achievements.service';
 import { CreateAchievementDto } from './dto/create-achievement.dto';
 import { UpdateAchievementDto } from './dto/update-achievement.dto';
@@ -28,7 +29,12 @@ export class AchievementsController {
     }
 
     if (query.uid && query.date) {
-      return this.achievementsService.findAllByDate(query.uid, query.date);
+      try {
+        return this.achievementsService.findAllByDate(query.uid, query.date);
+      } catch (e) {
+        logger.error(e);
+        return e;
+      }
     }
     if (query.uid) return this.achievementsService.findAllByUid(query.uid);
 
