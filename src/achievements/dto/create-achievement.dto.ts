@@ -2,6 +2,7 @@ import { CreateUsersOrdinaryDto } from 'src/users-ordinaries/dto/create-users-or
 
 export class CreateAchievementDto {
   id?: string;
+  userId: string;
   usersOrdinaries: CreateUsersOrdinaryDto;
   isAchieved: boolean;
   comment: string;
