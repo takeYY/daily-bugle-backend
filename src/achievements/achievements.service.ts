@@ -53,30 +53,8 @@ export class AchievementsService {
   }
 
   async findAllByUid(uid: string) {
-    const querySnapshot = await collectionRef.where('userId', '==', uid).get();
-    const docIds = [];
-    const achievements = querySnapshot.docs.map((doc) => {
-      docIds.push(doc.id);
-      return {
-        id: doc.id,
-        ...doc.data(),
-      };
-    });
-    const promise = docIds.map(async (docId, index) => {
-      const usersOrdinaries = (
-        await collectionRef.doc(docId).collection('usersOrdinaries').get()
-      ).docs.map((uo) => {
-        return {
-          id: uo.id,
-          ...uo.data(),
-        };
-      });
-      return {
-        ...achievements[index],
-        usersOrdinaries: await (await Promise.all(usersOrdinaries)).shift(),
-      };
-    });
-    return await Promise.all(promise);
+    const snapshot = await collectionRef.where('userId', '==', uid).get();
+    return this.findAllBySnapshot(snapshot);
   }
 
   async findAllByDate(uid: string, date: string) {
