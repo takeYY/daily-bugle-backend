@@ -22,7 +22,14 @@ export class AchievementsController {
   }
 
   @Get('query')
-  findAllByQuery(@Query() query: { uid: string }) {
+  findAllByQuery(@Query() query: { uid: string; date: string }) {
+    if (!query) {
+      return `The query is empty`;
+    }
+
+    if (query.uid && query.date) {
+      return this.achievementsService.findAllByDate(query.uid, query.date);
+    }
     if (query.uid) return this.achievementsService.findAllByUid(query.uid);
 
     return `The following queries are not supported: ${query}`;
