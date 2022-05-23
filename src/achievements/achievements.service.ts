@@ -99,10 +99,13 @@ export class AchievementsService {
 
   async update(id: string, updateAchievementDto: UpdateAchievementDto) {
     const achievementRef = collectionRef.doc(id);
-    const result = await achievementRef.update({
-      isAchieved: updateAchievementDto.isAchieved,
-      comment: updateAchievementDto.comment,
-    });
+    const result = await achievementRef.set(
+      {
+        isAchieved: updateAchievementDto.isAchieved,
+        comment: updateAchievementDto.comment,
+      },
+      { merge: true },
+    );
 
     return result;
   }
