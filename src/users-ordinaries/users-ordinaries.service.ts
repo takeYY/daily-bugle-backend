@@ -13,7 +13,7 @@ export class UsersOrdinariesService {
       userId: createUsersOrdinaryDto.userId,
       createdAt: new Date(),
       updatedAt: new Date(),
-      startedOn: createUsersOrdinaryDto.startedOn,
+      startedOn: new Date(createUsersOrdinaryDto.startedOn),
       isClosed: createUsersOrdinaryDto.isClosed,
     });
     collectionRef
