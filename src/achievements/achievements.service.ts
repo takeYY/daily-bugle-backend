@@ -67,6 +67,30 @@ export class AchievementsService {
     return this.findAllBySnapshot(snapshot);
   }
 
+  async findAllByToday(uid: string, date: string) {
+    const today = new Date(`${date} `);
+    const tomorrow = new Date(
+      `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate() + 1} `,
+    );
+    const achievementsByDate = await this.findAllByDate(uid, date);
+    const achievements = achievementsByDate.filter((achievement) => {
+      const startedOn = new Date(
+        achievement.usersOrdinaries.startedOn._seconds * 1000,
+      );
+      const weeks = [];
+      achievement.usersOrdinaries.weekdays.forEach((weekday) => {
+        weeks.push(weekday.order % 7);
+      });
+      return (
+        startedOn < tomorrow &&
+        !achievement.usersOrdinaries.isClosed &&
+        weeks.indexOf(today.getDay()) !== -1
+      );
+    });
+
+    return achievements;
+  }
+
   private async findAllBySnapshot(snapshot) {
     const docIds = [];
     const achievements = snapshot.docs.map((doc) => {
