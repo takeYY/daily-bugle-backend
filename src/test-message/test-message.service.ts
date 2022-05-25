@@ -111,21 +111,25 @@ export class TestMessageService {
       userId: userList[0].id,
       createdAt: new Date(),
       isClosed: false,
+      startedOn: new Date('2022-05-25'),
     });
     const tmp2 = await usersOrdinaryRef.add({
       userId: userList[1].id,
       createdAt: new Date(),
       isClosed: false,
+      startedOn: new Date('2022-05-25'),
     });
     const tmp3 = await usersOrdinaryRef.add({
       userId: userList[2].id,
       createdAt: new Date(),
       isClosed: false,
+      startedOn: new Date('2022-05-25'),
     });
     const tmp4 = await usersOrdinaryRef.add({
       userId: userList[2].id,
       createdAt: new Date(),
       isClosed: false,
+      startedOn: new Date('2022-05-24'),
     });
     const usersOrdinariesList = [tmp1, tmp2, tmp3, tmp4];
     console.log('@@@@ users ordinary @@@@');
