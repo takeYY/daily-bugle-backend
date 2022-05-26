@@ -3,6 +3,12 @@ import { CreateTestDto } from './dto/create-test.dto';
 import { UpdateTestDto } from './dto/update-test.dto';
 
 import { firestore } from '../app.service';
+import { testUsers } from './data/test-user';
+import { testWeekdays } from './data/test-weekday';
+import { testOrdinaries } from './data/test-ordinary';
+import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import { CreateOrdinaryDto } from 'src/ordinaries/dto/create-ordinary.dto';
+import { CreateWeekdayDto } from 'src/weekdays/dto/create-weekday.dto';
 
 const collectionRef = firestore.collection('test-users');
 const userRef = firestore.collection('test-users');
@@ -13,53 +19,57 @@ const weekdayRef = firestore.collection('test-weekdays');
 export class TestService {
   async create(createTestDto: CreateTestDto) {
     // userの追加
-    await [2, 3, 4, 5, 6, 7].forEach((n) => {
-      userRef.add({
-        name: `user-${n}`,
-      });
+    testUsers.forEach((testUser) => {
+      userRef.add(testUser);
     });
 
     // weekdayの追加
-    await [
-      { name: '月', order: 1, isChecked: false },
-      { name: '火', order: 2, isChecked: false },
-      { name: '水', order: 3, isChecked: false },
-      { name: '木', order: 4, isChecked: false },
-      { name: '金', order: 5, isChecked: false },
-      { name: '土', order: 6, isChecked: false },
-      { name: '日', order: 7, isChecked: false },
-    ].forEach((dict) => {
-      weekdayRef.add({
-        name: dict.name,
-        order: dict.order,
-        isChecked: dict.isChecked,
-      });
+    testWeekdays.forEach((testWeekday) => {
+      weekdayRef.add(testWeekday);
     });
 
     // ordinaryの追加
-    await [
-      '朝食を摂る',
-      '歯を磨く',
-      '掃除をする',
-      '洗濯をする',
-      '買い物に出かける',
-    ].forEach((l) => {
-      ordinaryRef.add({
-        name: l,
-      });
+    testOrdinaries.forEach((testOrdinary) => {
+      ordinaryRef.add(testOrdinary);
     });
 
-    const docRef = await collectionRef.add({
-      name: 'user-1',
+    // userList取得
+    const userList: CreateUserDto[] = (await userRef.get()).docs.map((doc) => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        displayName: data.displayName,
+        photoDataUrl: data.photoDataUrl,
+      };
     });
-    const snapshot = await docRef.get();
-    const data = snapshot.data();
-    const newOrdinaryData = {
-      id: docRef.id,
-      ...data,
-    };
 
-    return newOrdinaryData;
+    // ordinary取得
+    const ordinaryList: CreateOrdinaryDto[] = (
+      await ordinaryRef.get()
+    ).docs.map((doc) => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        name: data.name,
+      };
+    });
+
+    // weekdays 取得
+    const weekdayList: CreateWeekdayDto[] = (await weekdayRef.get()).docs.map(
+      (doc) => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          name: data.name,
+          order: data.order,
+          isChecked: data.isChecked,
+        };
+      },
+    );
+
+    // TODO: テスト用のusersOrdinaries作成
+
+    return { result: 'done' };
   }
 
   async findAll() {
