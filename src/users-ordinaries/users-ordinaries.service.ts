@@ -3,6 +3,8 @@ import { CreateUsersOrdinaryDto } from './dto/create-users-ordinary.dto';
 import { UpdateUsersOrdinaryDto } from './dto/update-users-ordinary.dto';
 
 import { firestore } from '../app.service';
+import { CreateOrdinaryDto } from 'src/ordinaries/dto/create-ordinary.dto';
+import { CreateWeekdayDto } from 'src/weekdays/dto/create-weekday.dto';
 
 const collectionRef = firestore.collection('users-ordinaries');
 
@@ -63,14 +65,51 @@ export class UsersOrdinariesService {
 
   async findAll() {
     const snapshot = await collectionRef.get();
-    const usersOrdinaryList = snapshot.docs.map((doc) => {
+    const docIds = [];
+    const usersOrdinaries = snapshot.docs.map((doc) => {
+      docIds.push(doc.id);
+      const data = doc.data();
       return {
         id: doc.id,
-        ...doc.data(),
+        userId: data.userId,
+        startedOn: data.startedOn,
+        createdAt: data.createdAt,
+        updatedAt: data.updatedAt,
+        isClosed: data.isClosed,
+        //...doc.data(),
       };
     });
-
-    return usersOrdinaryList;
+    const promise = docIds.map(async (docId, index) => {
+      const ordinary: CreateOrdinaryDto[] = (
+        await collectionRef.doc(docId).collection('ordinary').get()
+      ).docs.map((o) => {
+        return {
+          id: o.id,
+          name: o.data().name,
+        };
+      });
+      const weekday: CreateWeekdayDto[] = (
+        await collectionRef.doc(docId).collection('weekdays').get()
+      ).docs.map((w) => {
+        return {
+          id: w.id,
+          name: w.data().name,
+          order: w.data().order,
+          isChecked: w.data().isChecked,
+        };
+      });
+      return {
+        ...usersOrdinaries[index],
+        userId: usersOrdinaries[index].userId,
+        startedOn: usersOrdinaries[index].startedOn,
+        createdAt: usersOrdinaries[index].createdAt,
+        updatedAt: usersOrdinaries[index].updatedAt,
+        isClosed: usersOrdinaries[index].isClosed,
+        ordinary: await Promise.all(ordinary),
+        weekdays: await Promise.all(weekday),
+      };
+    });
+    return await Promise.all(promise);
   }
 
   async findAllByUid(uid: string) {
