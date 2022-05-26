@@ -6,70 +6,70 @@ import { firestore } from '../app.service';
 import { testUsers } from './data/test-user';
 import { testWeekdays } from './data/test-weekday';
 import { testOrdinaries } from './data/test-ordinary';
-import { CreateUserDto } from 'src/users/dto/create-user.dto';
-import { CreateOrdinaryDto } from 'src/ordinaries/dto/create-ordinary.dto';
-import { CreateWeekdayDto } from 'src/weekdays/dto/create-weekday.dto';
+import { getTestUsersOrdinaries } from './data/test-usersOrdinary';
+import { getTestAchievements } from './data/test-achievement';
 
-const collectionRef = firestore.collection('test-users');
-const userRef = firestore.collection('test-users');
-const ordinaryRef = firestore.collection('test-ordinaries');
-const weekdayRef = firestore.collection('test-weekdays');
+const collectionRef = firestore.collection('users');
+const userRef = firestore.collection('users');
+const ordinaryRef = firestore.collection('ordinaries');
+const weekdayRef = firestore.collection('weekdays');
+const usersOrdinaryRef = firestore.collection('users-ordinaries');
+const achievementsRef = firestore.collection('achievements');
+
+async function addUser(user) {
+  return await userRef.add(user);
+}
 
 @Injectable()
 export class TestService {
   async create(createTestDto: CreateTestDto) {
     // userの追加
-    testUsers.forEach((testUser) => {
-      userRef.add(testUser);
+    const addUser = testUsers.map(async (testUser) => {
+      return await userRef.add(testUser);
     });
 
     // weekdayの追加
-    testWeekdays.forEach((testWeekday) => {
-      weekdayRef.add(testWeekday);
+    const addWeekdays = testWeekdays.map(async (testWeekday) => {
+      return await weekdayRef.add(testWeekday);
     });
 
     // ordinaryの追加
-    testOrdinaries.forEach((testOrdinary) => {
-      ordinaryRef.add(testOrdinary);
+    const addOrdinaries = testOrdinaries.map(async (testOrdinary) => {
+      return await ordinaryRef.add(testOrdinary);
     });
 
-    // userList取得
-    const userList: CreateUserDto[] = (await userRef.get()).docs.map((doc) => {
-      const data = doc.data();
-      return {
-        id: doc.id,
-        displayName: data.displayName,
-        photoDataUrl: data.photoDataUrl,
-      };
-    });
+    // usersOrdinariesの追加
+    await Promise.all([addUser, addWeekdays, addOrdinaries])
+      .then(async () => {
+        const testUsersOrdinaries = await getTestUsersOrdinaries();
+        await Promise.all(testUsersOrdinaries).then(async () => {
+          console.log('@testUsersOrdinaries', testUsersOrdinaries);
+          const addUsersOrdinaries = testUsersOrdinaries.map(
+            async (usersOrdinary) => {
+              return await usersOrdinaryRef.add(usersOrdinary);
+            },
+          );
 
-    // ordinary取得
-    const ordinaryList: CreateOrdinaryDto[] = (
-      await ordinaryRef.get()
-    ).docs.map((doc) => {
-      const data = doc.data();
-      return {
-        id: doc.id,
-        name: data.name,
-      };
-    });
-
-    // weekdays 取得
-    const weekdayList: CreateWeekdayDto[] = (await weekdayRef.get()).docs.map(
-      (doc) => {
-        const data = doc.data();
-        return {
-          id: doc.id,
-          name: data.name,
-          order: data.order,
-          isChecked: data.isChecked,
-        };
-      },
-    );
-
-    // TODO: テスト用のusersOrdinaries作成
-
-    return { result: 'done' };
+          await Promise.all(addUsersOrdinaries)
+            .then(async () => {
+              // achievementsの追加
+              const testAchievements = await getTestAchievements();
+              await Promise.all(testAchievements).then(() => {
+                testAchievements.map(async (testAchievement) => {
+                  return await achievementsRef.add(testAchievement);
+                });
+              });
+            })
+            .catch((e) => {
+              console.error(e);
+              throw e;
+            });
+        });
+      })
+      .catch((e) => {
+        console.log(e);
+        throw e;
+      });
   }
 
   async findAll() {
