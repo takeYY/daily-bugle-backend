@@ -10,6 +10,7 @@ import {
 import { TestService } from './test.service';
 import { CreateTestDto } from './dto/create-test.dto';
 import { UpdateTestDto } from './dto/update-test.dto';
+import { logger } from 'firebase-functions/v1';
 
 @Controller('test')
 export class TestController {
@@ -17,7 +18,12 @@ export class TestController {
 
   @Post()
   create(@Body() createTestDto: CreateTestDto) {
-    return this.testService.create(createTestDto);
+    try {
+      return this.testService.create(createTestDto);
+    } catch (e) {
+      logger.error(e);
+      throw e;
+    }
   }
 
   @Get()
