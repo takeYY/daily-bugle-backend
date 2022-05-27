@@ -24,10 +24,28 @@ export class UsersOrdinariesController {
     return this.usersOrdinariesService.create(createUsersOrdinaryDto);
   }
 
-  // TODO: list -> queryへ変更
-  @Get('list')
-  findAllByUid(@Query('uid') uid: string) {
-    return this.usersOrdinariesService.findAllByUid(uid);
+  @Get('query')
+  findAllByUid(@Query() query: { uid: string; date?: string }) {
+    if (!query) {
+      return { statusCode: 400, result: `The query is empty` };
+    }
+    if (query.uid && query.date) {
+      try {
+        return this.usersOrdinariesService.findAllByDate(query.uid, query.date);
+      } catch (e) {
+        logger.error(e);
+        return e;
+      }
+    }
+    if (query.uid) {
+      try {
+        return this.usersOrdinariesService.findAllByUid(query.uid);
+      } catch (e) {
+        logger.error(e);
+        return e;
+      }
+    }
+    return `Nothing`;
   }
 
   @Get('today')
