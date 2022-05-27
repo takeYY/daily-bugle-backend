@@ -41,6 +41,23 @@ export class AchievementsController {
     return `The following queries are not supported: ${query}`;
   }
 
+  @Get('today')
+  findAllByToday(@Query() query: { uid: string; date: string }) {
+    if (!query) {
+      return 'The query is empty';
+    }
+
+    if (query.uid && query.date) {
+      try {
+        return this.achievementsService.findAllByToday(query.uid, query.date);
+      } catch (e) {
+        logger.error(e);
+        return e;
+      }
+    }
+    return 'done';
+  }
+
   @Get()
   findAll() {
     return this.achievementsService.findAll();
