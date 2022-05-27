@@ -88,31 +88,34 @@ export class UsersOrdinariesService {
       `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate() + 1} `,
     );
     const usersOrdinariesByDate = await this.findAllByDate(uid, date);
-    const usersOrdinaries = usersOrdinariesByDate.filter((usersOrdinary) => {
-      const startedOn = new Date(usersOrdinary.startedOn._seconds * 1000);
-      const weeks = [];
-      usersOrdinary.weekdays.forEach((weekday) => {
-        weeks.push(weekday.order % 7);
-      });
-      return (
-        startedOn < tomorrow &&
-        !usersOrdinary.isClosed &&
-        weeks.indexOf(today.getDay() !== -1)
-      );
-    });
+    const usersOrdinaries = (await Promise.all(usersOrdinariesByDate)).filter(
+      (usersOrdinary) => {
+        const startedOn = new Date(usersOrdinary.startedOn._seconds * 1000);
+        const weeks = [];
+        usersOrdinary.weekdays.forEach((weekday) => {
+          weeks.push(weekday.order % 7);
+        });
+        return (
+          startedOn < tomorrow &&
+          !usersOrdinary.isClosed &&
+          weeks.indexOf(today.getDay() !== -1)
+        );
+      },
+    );
+
     return usersOrdinaries;
   }
 
   private async findAllBySnapshot(snapshot) {
     const docIds = [];
-    const usersOrdinaries = snapshot.docs.map((doc) => {
+    const usersOrdinaries = await snapshot.docs.map((doc) => {
       docIds.push(doc.id);
       return {
         id: doc.id,
         ...doc.data(),
       };
     });
-    const promise = docIds.map(async (docId, index) => {
+    const promise = await docIds.map(async (docId, index) => {
       const ordinary = (
         await collectionRef.doc(docId).collection('ordinary').get()
       ).docs.map((o) => {
@@ -130,7 +133,7 @@ export class UsersOrdinariesService {
         };
       });
       return {
-        ...usersOrdinaries[index],
+        ...(await Promise.all(usersOrdinaries)[index]),
         ordinary: await (await Promise.all(ordinary)).shift(),
         weekdays: await Promise.all(weekday),
       };
