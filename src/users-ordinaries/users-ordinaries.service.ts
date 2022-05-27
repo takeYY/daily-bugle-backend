@@ -76,8 +76,7 @@ export class UsersOrdinariesService {
   private async findAllByDate(uid: string, date: string) {
     const snapshot = await collectionRef
       .where('userId', '==', uid)
-      .orderBy('createdAt')
-      .startAt(new Date(`${date} 00:00:00`))
+      .orderBy('startedOn')
       .endAt(new Date(`${date} 23:59:59`))
       .get();
     return this.findAllBySnapshot(snapshot);
