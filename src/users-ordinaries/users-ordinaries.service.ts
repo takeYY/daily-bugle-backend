@@ -87,7 +87,9 @@ export class UsersOrdinariesService {
     const tomorrow = new Date(
       `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate() + 1} `,
     );
-    const usersOrdinariesByDate = await this.findAllByDate(uid, date);
+    const usersOrdinariesByDate = await Promise.all(
+      await this.findAllByDate(uid, date),
+    );
     const usersOrdinaries = (await Promise.all(usersOrdinariesByDate)).filter(
       (usersOrdinary) => {
         const startedOn = new Date(usersOrdinary.startedOn._seconds * 1000);
@@ -133,7 +135,7 @@ export class UsersOrdinariesService {
         };
       });
       return {
-        ...(await Promise.all(usersOrdinaries)[index]),
+        ...usersOrdinaries[index],
         ordinary: await (await Promise.all(ordinary)).shift(),
         weekdays: await Promise.all(weekday),
       };
