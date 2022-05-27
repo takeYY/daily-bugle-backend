@@ -65,12 +65,12 @@ export class UsersOrdinariesService {
 
   async findAll() {
     const snapshot = await collectionRef.get();
-    return this.findAllBySnapshot(snapshot);
+    return await this.findAllBySnapshot(snapshot);
   }
 
   async findAllByUid(uid: string) {
     const snapshot = await collectionRef.where('userId', '==', uid).get();
-    return this.findAllBySnapshot(snapshot);
+    return await this.findAllBySnapshot(snapshot);
   }
 
   async findAllByDate(uid: string, date: string) {
@@ -79,7 +79,7 @@ export class UsersOrdinariesService {
       .orderBy('startedOn')
       .endAt(new Date(`${date} 23:59:59`))
       .get();
-    return this.findAllBySnapshot(snapshot);
+    return await this.findAllBySnapshot(snapshot);
   }
 
   // TODO: 曜日指定が動いていないので修正
