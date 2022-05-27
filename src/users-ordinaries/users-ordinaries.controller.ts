@@ -11,6 +11,7 @@ import {
 import { UsersOrdinariesService } from './users-ordinaries.service';
 import { CreateUsersOrdinaryDto } from './dto/create-users-ordinary.dto';
 import { UpdateUsersOrdinaryDto } from './dto/update-users-ordinary.dto';
+import { logger } from 'firebase-functions/v1';
 
 @Controller('users-ordinaries')
 export class UsersOrdinariesController {
@@ -23,9 +24,30 @@ export class UsersOrdinariesController {
     return this.usersOrdinariesService.create(createUsersOrdinaryDto);
   }
 
+  // TODO: list -> queryへ変更
   @Get('list')
   findAllByUid(@Query('uid') uid: string) {
     return this.usersOrdinariesService.findAllByUid(uid);
+  }
+
+  @Get('today')
+  findAllByToday(@Query() query: { uid: string; date: string }) {
+    if (!query) {
+      return `The query is empty`;
+    }
+
+    if (query.uid && query.date) {
+      try {
+        return this.usersOrdinariesService.findAllByToday(
+          query.uid,
+          query.date,
+        );
+      } catch (e) {
+        logger.error(e);
+        return e;
+      }
+    }
+    return 'done';
   }
 
   @Get()

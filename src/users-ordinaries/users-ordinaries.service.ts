@@ -65,57 +65,48 @@ export class UsersOrdinariesService {
 
   async findAll() {
     const snapshot = await collectionRef.get();
-    const docIds = [];
-    const usersOrdinaries = snapshot.docs.map((doc) => {
-      docIds.push(doc.id);
-      const data = doc.data();
-      return {
-        id: doc.id,
-        userId: data.userId,
-        startedOn: data.startedOn,
-        createdAt: data.createdAt,
-        updatedAt: data.updatedAt,
-        isClosed: data.isClosed,
-        //...doc.data(),
-      };
-    });
-    const promise = docIds.map(async (docId, index) => {
-      const ordinary: CreateOrdinaryDto[] = (
-        await collectionRef.doc(docId).collection('ordinary').get()
-      ).docs.map((o) => {
-        return {
-          id: o.id,
-          name: o.data().name,
-        };
-      });
-      const weekday: CreateWeekdayDto[] = (
-        await collectionRef.doc(docId).collection('weekdays').get()
-      ).docs.map((w) => {
-        return {
-          id: w.id,
-          name: w.data().name,
-          order: w.data().order,
-          isChecked: w.data().isChecked,
-        };
-      });
-      return {
-        ...usersOrdinaries[index],
-        userId: usersOrdinaries[index].userId,
-        startedOn: usersOrdinaries[index].startedOn,
-        createdAt: usersOrdinaries[index].createdAt,
-        updatedAt: usersOrdinaries[index].updatedAt,
-        isClosed: usersOrdinaries[index].isClosed,
-        ordinary: await Promise.all(ordinary),
-        weekdays: await Promise.all(weekday),
-      };
-    });
-    return await Promise.all(promise);
+    return this.findAllBySnapshot(snapshot);
   }
 
   async findAllByUid(uid: string) {
-    const querySnapshot = await collectionRef.where('userId', '==', uid).get();
+    const snapshot = await collectionRef.where('userId', '==', uid).get();
+    return this.findAllBySnapshot(snapshot);
+  }
+
+  private async findAllByDate(uid: string, date: string) {
+    const snapshot = await collectionRef
+      .where('userId', '==', uid)
+      .orderBy('createdAt')
+      .startAt(new Date(`${date} 00:00:00`))
+      .endAt(new Date(`${date} 23:59:59`))
+      .get();
+    return this.findAllBySnapshot(snapshot);
+  }
+
+  async findAllByToday(uid: string, date: string) {
+    const today = new Date(`${date} `);
+    const tomorrow = new Date(
+      `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate() + 1} `,
+    );
+    const usersOrdinariesByDate = await this.findAllByDate(uid, date);
+    const usersOrdinaries = usersOrdinariesByDate.filter((usersOrdinary) => {
+      const startedOn = new Date(usersOrdinary.startedOn._seconds * 1000);
+      const weeks = [];
+      usersOrdinary.weekdays.forEach((weekday) => {
+        weeks.push(weekday.order % 7);
+      });
+      return (
+        startedOn < tomorrow &&
+        !usersOrdinary.isClosed &&
+        weeks.indexOf(today.getDay() !== -1)
+      );
+    });
+    return usersOrdinaries;
+  }
+
+  private async findAllBySnapshot(snapshot) {
     const docIds = [];
-    const usersOrdinaries = querySnapshot.docs.map((doc) => {
+    const usersOrdinaries = snapshot.docs.map((doc) => {
       docIds.push(doc.id);
       return {
         id: doc.id,
@@ -141,7 +132,7 @@ export class UsersOrdinariesService {
       });
       return {
         ...usersOrdinaries[index],
-        ordinary: await Promise.all(ordinary),
+        ordinary: await (await Promise.all(ordinary)).shift(),
         weekdays: await Promise.all(weekday),
       };
     });
