@@ -54,7 +54,7 @@ export class AchievementsService {
 
   async findAllByUid(uid: string) {
     const snapshot = await collectionRef.where('userId', '==', uid).get();
-    return this.findAllBySnapshot(snapshot);
+    return await this.findAllBySnapshot(snapshot);
   }
 
   async findAllByDate(uid: string, date: string) {
@@ -64,7 +64,7 @@ export class AchievementsService {
       .startAt(new Date(`${date} 00:00:00`))
       .endAt(new Date(`${date} 23:59:59`))
       .get();
-    return this.findAllBySnapshot(snapshot);
+    return await this.findAllBySnapshot(snapshot);
   }
 
   async findAllByToday(uid: string, date: string) {
