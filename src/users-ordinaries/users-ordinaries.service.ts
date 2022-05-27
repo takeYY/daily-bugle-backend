@@ -82,6 +82,7 @@ export class UsersOrdinariesService {
     return this.findAllBySnapshot(snapshot);
   }
 
+  // TODO: 曜日指定が動いていないので修正
   async findAllByToday(uid: string, date: string) {
     const today = new Date(`${date} `);
     const tomorrow = new Date(
