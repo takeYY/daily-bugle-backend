@@ -85,6 +85,7 @@ export class UsersOrdinariesService {
   // TODO: 曜日指定が動いていないので修正
   async findAllByToday(uid: string, date: string) {
     const today = new Date(`${date} `);
+    // TODO: 翌日のデータ取得がおかしい！！
     const tomorrow = new Date(
       `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate() + 1} `,
     );
